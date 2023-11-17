@@ -74,7 +74,7 @@ const App: React.FC = () => {
           backgroundColor: "#fff",
           top: 0,
           zIndex: 1,
-          width: "100%",
+          width: "80%",
           height: "auto",
           display: "flex",
           flexDirection: "column",
