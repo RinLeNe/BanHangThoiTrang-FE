@@ -134,14 +134,14 @@ const App: React.FC = () => {
             mode="horizontal"
             defaultSelectedKeys={["1"]}
             items={[
-              {
-                key: "1",
-                label: "NAM",
-              },
-              {
-                key: "2",
-                label: "NỮ",
-              },
+              // {
+              //   key: "1",
+              //   label: "NAM",
+              // },
+              // {
+              //   key: "2",
+              //   label: "NỮ",
+              // },
               {
                 key: "3",
                 label: "SALE",
