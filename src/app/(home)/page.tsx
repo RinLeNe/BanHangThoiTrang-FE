@@ -32,39 +32,39 @@ const App: React.FC = () => {
     {
       title: "Category",
     },
-    {
-      title: "Category",
-    },
-    {
-      title: "Category",
-    },
-    {
-      title: "Category",
-    },
-    {
-      title: "Category",
-    },
-    {
-      title: "Category",
-    },
-    {
-        title: "Category",
-      },
-      {
-        title: "Category",
-      },
-      {
-        title: "Category",
-      },
-      {
-        title: "Category",
-      },
-      {
-        title: "Category",
-      },
-      {
-        title: "Category",
-      },
+    // {
+    //   title: "Category",
+    // },
+    // {
+    //   title: "Category",
+    // },
+    // {
+    //   title: "Category",
+    // },
+    // {
+    //   title: "Category",
+    // },
+    // {
+    //   title: "Category",
+    // },
+    // {
+    //     title: "Category",
+    //   },
+    //   {
+    //     title: "Category",
+    //   },
+    //   {
+    //     title: "Category",
+    //   },
+    //   {
+    //     title: "Category",
+    //   },
+    //   {
+    //     title: "Category",
+    //   },
+    //   {
+    //     title: "Category",
+    //   },
   ];
   return (
     <Layout>
