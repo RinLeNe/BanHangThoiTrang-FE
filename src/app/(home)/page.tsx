@@ -29,15 +29,15 @@ const App: React.FC = () => {
     token: { colorBgContainer },
   } = theme.useToken();
   const categoryData = [
-    {
-      title: "Category",
-    },
-    {
-      title: "Category",
-    },
-    {
-      title: "Category",
-    },
+    // {
+    //   title: "Category",
+    // },
+    // {
+    //   title: "Category",
+    // },
+    // {
+    //   title: "Category",
+    // },
     {
       title: "Category",
     },
