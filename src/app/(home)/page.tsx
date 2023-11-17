@@ -101,11 +101,11 @@ const App: React.FC = () => {
                 "linear-gradient(rgb(255, 240, 218), rgb(255, 255, 255))",
             }}
             items={[
-              {
-                label: "Địa chỉ cửa hàng",
-                key: "1",
-                icon: <EnvironmentOutlined />,
-              },
+              // {
+              //   label: "Địa chỉ cửa hàng",
+              //   key: "1",
+              //   icon: <EnvironmentOutlined />,
+              // },
               {
                 label: "Số điện thoại",
                 key: "2",
