@@ -29,7 +29,7 @@ const App: React.FC = () => {
     token: { colorBgContainer },
   } = theme.useToken();
   const categoryData = [
-    {,fhs
+    {
       title: "Category",
     }
     // {
