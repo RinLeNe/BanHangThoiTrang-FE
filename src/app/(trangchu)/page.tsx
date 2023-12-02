@@ -11,53 +11,120 @@ import {
   Layout,
   List,
   Menu,
+  Pagination,
   Row,
+  Skeleton,
   Typography,
   theme,
 } from "antd";
+import styles from "@/lib/productCSS.module.css";
+
 const { Text } = Typography;
-import Search, { SearchProps } from "antd/es/input/Search";
-import {
-  CustomerServiceOutlined,
-  EnvironmentOutlined,
-  PhoneOutlined,
-  ShoppingCartOutlined,
-} from "@ant-design/icons";
 import Link from "next/link";
 import { findAllCategory } from "../services/CategoryService";
 import { Category } from "@/interface/categoryInterface";
 import Title from "antd/es/typography/Title";
 import Paragraph from "antd/es/typography/Paragraph";
 import Header from "./components/header";
+import { Product } from "@/interface/productInterface";
+import {
+  findAllProduct,
+  findProductByCategory,
+} from "../services/ProductService";
+import { CartProvider, useCart } from "../context/cartContext";
+import { useAuth } from "../context/use-auth";
 
 const { Content, Footer } = Layout;
-
-// const cardStyle: React.CSSProperties = {
-//   width: 620,
-// };
 
 const imgStyle: React.CSSProperties = {
   display: "block",
   width: 500,
 };
+
 const App: React.FC = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
   const [categoryData, setCategoryData] = useState<Category[] | undefined>();
+  const [productData, setProductData] = useState<Product[] | undefined>();
+  const { onAddProductToCart } = useCart();
+  const [loading, setLoading] = useState(true);
 
+  const { data } = useAuth();
+  //@ts-ignore
+  const userId = data?.id;
+  // const [productByCate, setProductByCate] = useState<Product[] | undefined>();
+  const [pageInfo, setPageInfo] = useState({
+    totalPages: 0,
+    currentPage: 0,
+    pageSize: 10, // adjust based on your API response
+    totalElements: 0,
+  });
+
+  const formatCurrency = (value: number | undefined) => {
+    if (typeof value !== "number") {
+      return "N/A";
+    }
+    return value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
+  
   useEffect(() => {
-    findCategory();
+    setLoading(true);
+    Promise.all([findCategory(), findProduct()])
+      .then(() => setLoading(false)) 
+      .catch(() => setLoading(false));
+    // findCategory();
+    // findProduct();
   }, []);
   const findCategory = async () => {
-    const response = await findAllCategory();
-    //@ts-ignore
-    setCategoryData(response);
+    try {
+      const response = await findAllCategory();
+      //@ts-ignore
+      setCategoryData(response);
+    } catch (error) {
+      console.log("Can't get");
+    }
   };
-  console.log(categoryData);
+  const findProduct = async (page: number = 0) => {
+    try {
+      const response = await findAllProduct(page, pageInfo.pageSize);
+      //@ts-ignore
+      setProductData(response);
+      setPageInfo({
+        //@ts-ignore
+        totalPages: response?.totalPages,
+        //@ts-ignore
+        currentPage: response?.number,
+        //@ts-ignore
+        pageSize: response?.size,
+        //@ts-ignore
+        totalElements: response?.totalElements,
+      });
+    } catch (error) {
+      console.log("Can't get");
+    }
+  };
+  const handleAddToCart = async (userId: any, item: any) => {
+    try {
+      //@ts-ignore
+      const cartDetail: CartDetail = {
+        user: { id: userId },
+        product: { id: item.id },
+        quantity: 1
+      };
+      onAddProductToCart(cartDetail);
+    } catch (error) {
+      console.error("Error adding to RoomOrder:", error);
+    }
+  };
   return (
     <Layout>
+      {/* <CartProvider> */}
       <Header />
+      {/* </CartProvider> */}
       <Carousel style={{ padding: "0 0" }}>
         <div>
           <Image
@@ -74,28 +141,28 @@ const App: React.FC = () => {
         renderItem={(item) => {
           return (
             <List.Item>
-              <Link href="/category">
-              <Card
-                size="small"
-                hoverable
-                cover
-                style={{
-                  // width: "100px",
-                  textAlign: "center",
-                  minHeight: "90px",
-                }}
-              >
-                <Text
+              <Link href={`/category/${item.id}`}>
+                <Card
+                  size="small"
+                  hoverable
+                  cover
                   style={{
-                    display: "block",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
+                    // width: "100px",
+                    textAlign: "center",
+                    minHeight: "90px",
                   }}
                 >
-                  {item.name}
-                </Text>
-              </Card>
+                  <Text
+                    style={{
+                      display: "block",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {item.name}
+                  </Text>
+                </Card>
               </Link>
             </List.Item>
           );
@@ -106,54 +173,77 @@ const App: React.FC = () => {
           style={{ padding: 24, minHeight: 380, background: colorBgContainer }}
         >
           {/* Content */}
-          <Title level={2}>Thời Trang Nam Nữ</Title>
+          <Title level={2}>Thời Trang Nam</Title>
+          {/* <Pagination
+            current={pageInfo.currentPage + 1}
+            total={pageInfo.totalElements}
+            pageSize={pageInfo.pageSize}
+            onChange={(page) => findProduct(page - 1)}
+          /> */}
           <List
             grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 5 }} // Adjust the grid settings
             // style={{ padding: "30px", paddingLeft: "200px", paddingRight: "200px" }}
-            dataSource={categoryData}
-            renderItem={(item) => {
+            //@ts-ignore
+            dataSource={productData?.content}
+            renderItem={(item: Product) => {
               return (
                 <List.Item>
-                  <Badge.Ribbon>
-                    <Card
-                      style={{ width: 300 }}
-                      actions={
-                        [
-                          // <SettingOutlined key="setting" />,
-                          // <EditOutlined key="edit" />,
-                          // <EllipsisOutlined key="ellipsis" />,
-                        ]
-                      }
-                      cover={
+                  <Skeleton loading={loading} active={!productData}>
+                  <Card
+                    className={styles.productCard}
+                    style={{ width: 300 }}
+                    actions={
+                      [
+                        // <SettingOutlined key="setting" />,
+                        // <EditOutlined key="edit" />,
+                        // <EllipsisOutlined key="ellipsis" />,
+                      ]
+                    }
+                    cover={
+                      //@ts-ignore
+                      <Link href={`/product/${item.id}`}>
                         <Image
-                          src="https://firebasestorage.googleapis.com/v0/b/leafy-emblem-385311.appspot.com/o/image%2Fdemoimage.jpeg?alt=media&token=278f06ce-e84d-4c0b-9f73-798829fc6118"
+                          className={styles.productImage}
+                          src={item.image_id[0]?.path}
                           alt="product"
                           preview={false}
                         />
+                      </Link>
+                    }
+                  >
+                    <div className={styles.addToCartButton}>
+                      <Button
+                        type="default"
+                        size="large"
+                        onClick={() => {
+                          handleAddToCart(userId, item);
+                        }}
+                      >
+                        Thêm vào giỏ hàng
+                      </Button>
+                    </div>
+                    <Card.Meta
+                      title={
+                        <Typography.Paragraph>
+                          <Typography.Text type="danger">
+                            {formatCurrency(item.price)}
+                          </Typography.Text>
+                        </Typography.Paragraph>
                       }
-                    >
-                      <Card.Meta
-                        title={
-                          <Typography.Paragraph>
-                            <Typography.Text type="danger">
-                              195.000 VNĐ
-                            </Typography.Text>
-                          </Typography.Paragraph>
-                        }
-                        description={
-                          <Typography.Paragraph
-                            ellipsis={{
-                              rows: 2,
-                              expandable: true,
-                              symbol: "more",
-                            }}
-                          >
-                            <Text>Áo Polo Basic Nữ Phối Màu</Text>
-                          </Typography.Paragraph>
-                        }
-                      ></Card.Meta>
-                    </Card>
-                  </Badge.Ribbon>
+                      description={
+                        <Typography.Paragraph
+                          ellipsis={{
+                            rows: 1,
+                            expandable: true,
+                            symbol: "more",
+                          }}
+                        >
+                          {item.title}
+                        </Typography.Paragraph>
+                      }
+                    ></Card.Meta>
+                  </Card>
+                  </Skeleton>
                 </List.Item>
               );
             }}

@@ -1,8 +1,13 @@
+import { useCart } from "@/app/context/cartContext";
+import { useAuth } from "@/app/context/use-auth";
+import { checkoutCart } from "@/app/services/CartService";
+import { profile } from "@/interface/AuthInterface";
 import { Product } from "@/interface/productInterface";
 import {
-    CreditCardOutlined,
+  CreditCardOutlined,
   DollarOutlined,
   EnvironmentOutlined,
+  ExclamationCircleFilled,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import {
@@ -12,60 +17,169 @@ import {
   Flex,
   Form,
   Input,
+  InputNumber,
+  Modal,
   Radio,
   Row,
   Select,
   Space,
   Table,
+  Typography,
+  message,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { Option } from "antd/es/mentions";
 import { ColumnsType } from "antd/es/table";
-import { useState } from "react";
-
-const AppCheckout = () => {
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+// import { useState } from "react";
+interface IProps {
+  listCartProductTick: Product[];
+}
+const formatCurrency = (value: number | undefined) => {
+  if (typeof value !== "number") {
+    return "N/A";
+  }
+  return value.toLocaleString("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
+};
+//@ts-ignore
+const initialValues: profile = {
+  fullname: "",
+  email: "",
+  phoneNumber: 0,
+  address: "",
+};
+const AppCheckout: React.FC<IProps> = ({ listCartProductTick }) => {
+  const [totalProduct, setTotalProduct] = useState<number>(0);
+  const { data } = useAuth();
+  const [form] = Form.useForm();
+  const { confirm } = Modal;
+  const router = useRouter();
+  useEffect(() => {
+    if (data) {
+      form.setFieldsValue(data);
+    }
+  }, [form, data]);
+  useEffect(() => {
+    const sum =
+      listCartProductTick.reduce((acc, record) => {
+        const { quantity } = record;
+        //@ts-ignore
+        const { price } = record.product;
+        if (quantity !== undefined && price !== undefined) {
+          return acc + quantity * price;
+        }
+        return acc;
+      }, 0) || 0;
+    setTotalProduct(sum);
+  }, [listCartProductTick]);
+  const showPromiseConfirm = () => {
+    confirm({
+      title: "Bạn có chắc chắn muốn thanh toán?",
+      icon: <ExclamationCircleFilled />,
+      // content: '...',
+      onOk() {
+        return new Promise<void>((resolve) => {
+          setTimeout(() => {
+            const cartIds = listCartProductTick.map((product) => (product.id));
+            //@ts-ignore
+            checkoutCart(data?.id, cartIds);
+            // console.log(cartIds)
+            message.success("Thanh toán thành công!");
+            router.push("/profile");
+            resolve();
+          }, 1000);
+        }).catch(() => console.log("Oops errors!"));
+      },
+      onCancel() {},
+    });
+  };
   const columns: ColumnsType<Product> = [
-    // {
-    //   title: "ID",
-    //   dataIndex: "id",
-    //   key: "id",
-    // //   render: () => <a></a>,
-    // },
     {
       title: "Sản phẩm",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: ["product", "title"],
+      key: "product.title",
+      render: (_, record) => {
+        //@ts-ignore
+        const product_image = record.product.image_id[0].path;
+        //@ts-ignore
+        const product_title = record.product.title;
+        return (
+          <Flex>
+            <img alt="avatar" src={product_image} style={{ width: 80 }} />
+            <Flex
+              vertical
+              flex={1}
+              justify="space-between"
+              style={{ padding: 10 }}
+            >
+              <Typography.Paragraph
+                style={{ width: "280px" }}
+                ellipsis={{
+                  rows: 1,
+                  expandable: true,
+                  symbol: "more",
+                }}
+              >
+                {product_title}
+              </Typography.Paragraph>
+              <Flex align="flex-end" justify="space-between">
+                <Typography.Paragraph
+                  // style={{ width: "280px" }}
+                  ellipsis={{
+                    rows: 1,
+                    expandable: true,
+                    symbol: "more",
+                  }}
+                >
+                  Màu: N/A
+                </Typography.Paragraph>
+                <Typography.Paragraph
+                  style={{ width: "280px" }}
+                  ellipsis={{
+                    rows: 1,
+                    expandable: true,
+                    symbol: "more",
+                  }}
+                >
+                  Size: N/A
+                </Typography.Paragraph>
+              </Flex>
+            </Flex>
+          </Flex>
+        );
+      },
     },
-    // {
-    //   title: "Ảnh",
-    //   dataIndex: "image",
-    //   key: "image",
-    // //   render: () => <Image width={80} src={} />,
-    // },
-    // {
-    //   title: "Image",
-    //   dataIndex: "image",
-    //   key: "image",
-    //   render: (_, record) => (
-    //     <Paragraph ellipsis={{ rows: 2, expandable: true, symbol: "more" }}>
-    //       {record.image}
-    //     </Paragraph>
-    //   ),
-    // },
     {
       title: "Số lượng",
-      dataIndex: ["unit", "name"],
-      key: "unit.name",
+      dataIndex: "quantity",
+      key: "quantity",
     },
     {
       title: "Đơn giá",
-      dataIndex: "price",
-      key: "price",
+      dataIndex: ["product", "price"],
+      key: "product.price",
+      render: (_, record) => {
+        //@ts-ignore
+        return formatCurrency(record.product.price);
+      },
     },
     {
       title: "Tổng tính",
-      dataIndex: "price",
-      key: "price",
+      dataIndex: "total",
+      key: "total",
+      width: "10%",
+      render: (_, record) => {
+        const { quantity } = record;
+        //@ts-ignore
+        const { price } = record.product;
+        const total = quantity * price || 0;
+
+        return formatCurrency(total);
+      },
     },
   ];
   return (
@@ -82,7 +196,11 @@ const AppCheckout = () => {
                   </>
                 }
               >
-                <Form layout="vertical">
+                <Form
+                  layout="vertical"
+                  initialValues={initialValues}
+                  form={form}
+                >
                   <Row gutter={24}>
                     {/* First Row */}
                     <Col span={24}>
@@ -103,7 +221,7 @@ const AppCheckout = () => {
                         </Col>
                         <Col span={8}>
                           <Form.Item
-                            name="phonenumber"
+                            name="phoneNumber"
                             label="Số điện thoại"
                             rules={[
                               {
@@ -190,13 +308,16 @@ const AppCheckout = () => {
                       </Row>
                     </Col>
                   </Row>
-                  <TextArea
-                    showCount
-                    maxLength={100}
-                    //   onChange={onChange}
-                    placeholder="Nhập địa chỉ cụ thể"
-                    style={{ height: 120, resize: "none" }}
-                  />
+                  <Form.Item name="address">
+                    <TextArea
+                      name="address"
+                      showCount
+                      maxLength={100}
+                      //   onChange={onChange}
+                      placeholder="Nhập địa chỉ cụ thể"
+                      style={{ height: 120, resize: "none" }}
+                    />
+                  </Form.Item>
                 </Form>
               </Card>
             </div>
@@ -213,7 +334,10 @@ const AppCheckout = () => {
                 <Table
                   pagination={{ defaultPageSize: 5 }}
                   columns={columns}
-                  // dataSource=()
+                  dataSource={listCartProductTick.map((product) => ({
+                    ...product,
+                    key: product.id,
+                  }))}
                 />
               </Card>
             </div>
@@ -224,7 +348,8 @@ const AppCheckout = () => {
             <Card
               title={
                 <>
-                  <CreditCardOutlined style={{ fontSize: "28px" }} /> Phương Thức Thanh Toán
+                  <CreditCardOutlined style={{ fontSize: "28px" }} /> Phương
+                  Thức Thanh Toán
                 </>
               }
             >
@@ -239,17 +364,24 @@ const AppCheckout = () => {
           </div>
 
           <Card title={<>Chi Tiết Thanh Toán</>}>
-            
-            <p>Tổng tiền hàng:</p>
-            <p>Phí vận chuyển:</p>
-            <hr />
             <Space>Tổng tiền hàng: </Space>
-            <Space style={{ float: "right", color: "red" }}>0 VNĐ</Space>
+            <Space style={{ float: "right" }}>
+              {formatCurrency(totalProduct)}
+            </Space>
+            <br />
+            <Space>Phí vận chuyển: </Space>
+            <Space style={{ float: "right" }}>0 VNĐ</Space>
+            <hr />
+            <Space>Tổng thanh toán: </Space>
+            <Space style={{ float: "right", color: "red" }}>
+              {formatCurrency(totalProduct)}
+            </Space>
             <Button
               danger
               block
               type="primary"
               style={{ marginTop: "20px", height: "45px" }}
+              onClick={showPromiseConfirm}
             >
               Thanh toán
             </Button>
