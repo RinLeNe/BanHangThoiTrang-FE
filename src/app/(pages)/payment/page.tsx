@@ -1,26 +1,26 @@
 "use client";
-import { Breadcrumb, Button, Col, Flex, Row, Steps, message, theme } from "antd";
+import {
+  Breadcrumb,
+  Button,
+  Col,
+  Flex,
+  Row,
+  Steps,
+  message,
+  theme,
+} from "antd";
 import AppCart from "./components/cart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppCheckout from "./components/checkout";
+import { CartProvider, useCart } from "@/app/context/cartContext";
+import { Product } from "@/interface/productInterface";
 const AppPayment: React.FC = () => {
-  const steps = [
-    {
-      title: "Giỏ hàng",
-      content: <AppCart />,
-    },
-    {
-      title: "Thanh toán",
-      content: <AppCheckout />,
-    },
-    {
-      title: "Last",
-      content: "Hoàn tất",
-    },
-  ];
-  const { token } = theme.useToken();
+  // const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
-
+  const [cartProductTick, setCartProductTick] = useState<Product[]>([]);
+  const onCartProductTick = (product: Product[]) => {
+    setCartProductTick(product);
+  };
   const next = () => {
     setCurrent(current + 1);
   };
@@ -28,6 +28,28 @@ const AppPayment: React.FC = () => {
   const prev = () => {
     setCurrent(current - 1);
   };
+  const steps = [
+    {
+      title: "Giỏ hàng",
+      content: (
+        <CartProvider>
+          <AppCart
+            stepCurrent={current}
+            setCurrent={setCurrent}
+            onSelectProduct={onCartProductTick}
+          />
+        </CartProvider>
+      ),
+    },
+    {
+      title: "Thanh toán",
+      content: <AppCheckout listCartProductTick={cartProductTick}/>,
+    },
+    {
+      title: "Hoàn tất",
+      content: "Hoàn tất",
+    },
+  ];
 
   const items = steps.map((item) => ({ key: item.title, title: item.title }));
   return (
@@ -44,16 +66,21 @@ const AppPayment: React.FC = () => {
       </div>
 
       <Breadcrumb
+        style={{
+          paddingLeft: "130px",
+          fontSize: "16px",
+          paddingBottom: "10px",
+        }}
         items={[
           {
-            title: "Trang chủ",
+            title: <a href="/">Trang chủ</a>,
           },
           {
             title: "Giỏ hàng",
           },
         ]}
       />
-            <div>{steps[current].content}</div>
+      <div>{steps[current].content}</div>
 
       {/* <AppCart /> */}
       {/* <Row justify={"space-between"}>
@@ -71,12 +98,15 @@ const AppPayment: React.FC = () => {
           </Button>
         )}
         {current === steps.length - 1 && (
-          <Button type="primary" onClick={() => message.success('Processing complete!')}>
+          <Button
+            type="primary"
+            onClick={() => message.success("Processing complete!")}
+          >
             Done
           </Button>
         )}
         {current > 0 && (
-          <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
+          <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
             Previous
           </Button>
         )}

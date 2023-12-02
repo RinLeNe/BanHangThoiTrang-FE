@@ -1,0 +1,24 @@
+  .productImage {
+    /* width: 100%; */
+    height: auto;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .addToCartButton {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .productCard:hover .productImage {
+    /* trassform: scale(1.1); */
+    transition: opacity 0.3s ease-in-out;
+
+  }
+
+  .productCard:hover .addToCartButton {
+    opacity: 1; 
+  } 
