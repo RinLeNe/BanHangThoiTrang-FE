@@ -38,11 +38,18 @@ const ListProduct: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
     });
   };
   const columns: ColumnsType<Product> = [
+    // {
+    //   title: "ID",
+    //   dataIndex: "id",
+    //   key: "id",
+    //   render: (text) => <a>{text}</a>,
+    // },
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      render: (text) => <a>{text}</a>,
+      title: "STT",
+      dataIndex: "index",
+      key: "index",
+      //@ts-ignore
+      render: (_, __, index) => <span>{data.pageable.offset + index + 1}</span>,
     },
     {
       title: "Tên sản phẩm",
@@ -97,14 +104,22 @@ const ListProduct: React.FC<IProps> = ({ onEdit, onDelete, data }) => {
 
   return (
       <Table
+      style={{width:"auto"}}
         // pagination={{ defaultPageSize: 5 }}
         pagination={false}  
         columns={columns}
         //@ts-ignore
-        dataSource={data.content?.map((product) => ({
+        // dataSource={data.content?.map((product) => ({
+        //   ...product,
+        //   key: product.id,
+        // }))}
+        dataSource={data.content?.map((product, index) => ({
           ...product,
+          index: index + 1,
           key: product.id,
         }))}
+        scroll={{ x: true }} // Cho phép cuộn ngang nếu cần
+
       />
   );
 };

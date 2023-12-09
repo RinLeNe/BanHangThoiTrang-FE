@@ -55,8 +55,8 @@ const Profile: React.FC = () => {
         <CartProvider>
           <Header />
         </CartProvider>
-        <Row justify={"space-between"} style={{ paddingTop: "50px" }}>
-          <Col span={6} style={{ paddingLeft: "200px", textAlign:"center" }}>
+        <Row justify={"space-between"} style={{ paddingTop: "50px"}}>
+          <Col span={6} style={{ paddingLeft: "200px", textAlign:"center", paddingBottom:"30%" }}>
             {fullname}
             <Menu
               mode="inline"

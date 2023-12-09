@@ -36,6 +36,7 @@ import {
 } from "@/interface/productInterface";
 import TextArea from "antd/es/input/TextArea";
 import { ProductType } from "@/interface/ProductTypeEnum";
+import { ProductSize } from "@/interface/ProductSizeEnum";
 
 interface IProps {
   product?: Product;
@@ -50,6 +51,7 @@ const initialValues: ProductDetail = {
   discount: 0,
   quantity: 0,
   productType: ProductType.typeMALE,
+  productSize: ProductSize.S,
   description: "",
   productCategory: {
     id: "",
@@ -248,24 +250,45 @@ const TableCRUD: React.FC<IProps> = (props) => {
               />
             </Modal>
           </Form.Item>
-          <Form.Item
-          name="productType"
-          label="Loại sản phẩm"
-          rules={[
-            {
-              required: true,
-              message: 'Vui lòng chọn loại sản phẩm!',
-            },
-          ]}
-        >
-          <Select>
-            {Object.values(ProductType).map(type => (
-              <Select.Option key={type} value={type}>
-                {type}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+          <Flex >
+            <Form.Item
+              name="productType"
+              label="Loại sản phẩm"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn loại sản phẩm!",
+                },
+              ]}
+            >
+              <Select>
+                {Object.values(ProductType).map((type) => (
+                  <Select.Option key={type} value={type}>
+                    {type}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+            name="productSize"
+            label="Chọn Size"
+            style={{width:"100px", marginLeft:"20px"}}
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn Size sản phẩm!",
+              },
+            ]}
+          >
+            <Select>
+              {Object.values(ProductSize).map((type) => (
+                <Select.Option key={type} value={type}>
+                  {type}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          </Flex>
 
           <Flex>
             <Flex

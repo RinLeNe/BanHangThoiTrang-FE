@@ -7,5 +7,6 @@ export interface CartDetail {
   product: Pick<Product, "id">;
   // orderTime: string;
   quantity: any;
+  size: any;
   // price: number;
 }

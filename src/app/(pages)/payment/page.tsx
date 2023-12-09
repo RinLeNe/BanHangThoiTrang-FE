@@ -43,7 +43,7 @@ const AppPayment: React.FC = () => {
     },
     {
       title: "Thanh toán",
-      content: <AppCheckout listCartProductTick={cartProductTick}/>,
+      content: <AppCheckout listCartProductTick={cartProductTick} />,
     },
     {
       title: "Hoàn tất",

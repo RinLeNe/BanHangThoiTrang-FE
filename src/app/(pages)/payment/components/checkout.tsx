@@ -84,12 +84,13 @@ const AppCheckout: React.FC<IProps> = ({ listCartProductTick }) => {
       onOk() {
         return new Promise<void>((resolve) => {
           setTimeout(() => {
-            const cartIds = listCartProductTick.map((product) => (product.id));
+            const cartIds = listCartProductTick.map((product) => product.id);
             //@ts-ignore
             checkoutCart(data?.id, cartIds);
             // console.log(cartIds)
             message.success("Thanh toán thành công!");
             router.push("/profile");
+            router.refresh();
             resolve();
           }, 1000);
         }).catch(() => console.log("Oops errors!"));
@@ -107,6 +108,8 @@ const AppCheckout: React.FC<IProps> = ({ listCartProductTick }) => {
         const product_image = record.product.image_id[0].path;
         //@ts-ignore
         const product_title = record.product.title;
+        //@ts-ignore
+        const size = record.size;
         return (
           <Flex>
             <img alt="avatar" src={product_image} style={{ width: 80 }} />
@@ -145,7 +148,7 @@ const AppCheckout: React.FC<IProps> = ({ listCartProductTick }) => {
                     symbol: "more",
                   }}
                 >
-                  Size: N/A
+                  Size: {size}
                 </Typography.Paragraph>
               </Flex>
             </Flex>
@@ -189,6 +192,9 @@ const AppCheckout: React.FC<IProps> = ({ listCartProductTick }) => {
           <Flex vertical>
             <div style={{ paddingLeft: "130px", paddingBottom: "20px" }}>
               <Card
+                style={{
+                  boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.1)",
+                }}
                 title={
                   <>
                     <EnvironmentOutlined style={{ fontSize: "28px" }} /> Thông
@@ -324,6 +330,9 @@ const AppCheckout: React.FC<IProps> = ({ listCartProductTick }) => {
 
             <div style={{ paddingLeft: "130px" }}>
               <Card
+                style={{
+                  boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.1)",
+                }}
                 title={
                   <>
                     <ShoppingCartOutlined style={{ fontSize: "32px" }} /> Thông
@@ -346,6 +355,9 @@ const AppCheckout: React.FC<IProps> = ({ listCartProductTick }) => {
         <Col span={9} style={{ paddingRight: "130px" }}>
           <div style={{ paddingBottom: "20px" }}>
             <Card
+              style={{
+                boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.1)",
+              }}
               title={
                 <>
                   <CreditCardOutlined style={{ fontSize: "28px" }} /> Phương
@@ -353,7 +365,7 @@ const AppCheckout: React.FC<IProps> = ({ listCartProductTick }) => {
                 </>
               }
             >
-              <Radio.Group>
+              <Radio.Group defaultValue={3}>
                 <Space direction="vertical">
                   <Radio value={1}>ATM Card ( Thẻ nội địa )</Radio>
                   <Radio value={2}>Thanh toán qua MoMo</Radio>
@@ -363,7 +375,12 @@ const AppCheckout: React.FC<IProps> = ({ listCartProductTick }) => {
             </Card>
           </div>
 
-          <Card title={<>Chi Tiết Thanh Toán</>}>
+          <Card
+            style={{
+              boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
+            title={<>Chi Tiết Thanh Toán</>}
+          >
             <Space>Tổng tiền hàng: </Space>
             <Space style={{ float: "right" }}>
               {formatCurrency(totalProduct)}

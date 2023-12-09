@@ -117,7 +117,8 @@ const AppCart: React.FC<IProps> = ({
       product: {
         id: cartDetail?.product?.id,
       },
-      quantity: cartDetail,
+      quantity: cartDetail.quantity,
+      size: cartDetail.size,
     };
     const jsonString = serializableQuantity;
     //@ts-ignore
@@ -140,6 +141,9 @@ const AppCart: React.FC<IProps> = ({
       key: "product.title",
       render: (_, record) => {
         const quantity = record.quantity;
+        //@ts-ignore
+        const size = record.size;
+
         const cartId = record.id;
         //@ts-ignore
         const product_image = record.product.image_id[0].path;
@@ -165,26 +169,21 @@ const AppCart: React.FC<IProps> = ({
               >
                 {product_title}
               </Typography.Paragraph>
+              {/* <Typography>Size:</Typography> */}
               <Select
-                defaultValue="S"
-                style={{ width: 50, marginRight: "10px" }}
-                size="small"
-                // onChange={handleChange}
+                defaultValue={"S"}
+                value={size}
+                style={{ width: 70, marginRight: "10px" }}
+                size="middle"
                 options={[
                   { value: "S", label: "S" },
                   { value: "L", label: "L" },
                   { value: "M", label: "M" },
                 ]}
-              />
-              <InputNumber
-                size="small"
-                min={1}
-                max={10}
-                defaultValue={quantity}
-                value={quantity}
-                style={{ width: 50 }}
-                //@ts-ignore
-                onChange={(newValue) => handleUpdateCartItem(cartId, newValue)}
+                onChange={(value) =>
+                  //@ts-ignore
+                  handleUpdateCartItem(cartId, { ...record, size: value })
+                }
               />
             </Flex>
           </Flex>
@@ -195,6 +194,19 @@ const AppCart: React.FC<IProps> = ({
       title: "Số lượng",
       dataIndex: "quantity",
       key: "quantity",
+      render: (_, record) => (
+        <InputNumber
+          size="small"
+          min={1}
+          // max={10}
+          value={record.quantity}
+          style={{ width: 50 }}
+          onChange={(value) =>
+            //@ts-ignore
+            handleUpdateCartItem(record.id, { ...record, quantity: value })
+          }
+        />
+      ),
     },
     {
       title: "Đơn giá",
@@ -206,7 +218,7 @@ const AppCart: React.FC<IProps> = ({
       },
     },
     {
-      title: "Tổng tiền",
+      title: "Tổng tính",
       dataIndex: "total",
       key: "total",
       width: "10%",
@@ -231,7 +243,7 @@ const AppCart: React.FC<IProps> = ({
               onDelete(record.id);
             }}
           >
-            <DeleteOutlined /> Delete
+            <DeleteOutlined style={{ color: "red" }} />
           </a>
         </Space>
       ),
@@ -240,20 +252,30 @@ const AppCart: React.FC<IProps> = ({
   return (
     <>
       <Row justify={"space-between"}>
-        <Col span={14}>
+        <Col span={15}>
           <Flex vertical>
             <div style={{ paddingLeft: "130px" }}>
-              <Card>
-                <Checkbox
-                  style={{ paddingBottom: "10px", fontSize: "16px" }}
-                  checked={
-                    selectedProducts.length === cartItems.length &&
-                    cartItems.length > 0
-                  }
-                  onChange={handleSelectAllChange}
-                >
-                  Tất cả
-                </Checkbox>
+              <Card
+                style={{
+                  boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.1)", // Adjust the values according to your design
+                }}
+              >
+                <Flex flex={1} justify="space-between" style={{ padding: 10 }}>
+                  <Checkbox
+                    style={{ paddingBottom: "10px", fontSize: "16px" }}
+                    checked={
+                      selectedProducts.length === cartItems.length &&
+                      cartItems.length > 0
+                    }
+                    onChange={handleSelectAllChange}
+                  >
+                    Tất cả
+                  </Checkbox>
+                  <Typography style={{ color: "#707070" }}>
+                    {cartItems.length} Sản phẩm
+                  </Typography>
+                </Flex>
+
                 <Table
                   pagination={{ defaultPageSize: 5 }}
                   //@ts-ignore
@@ -267,9 +289,16 @@ const AppCart: React.FC<IProps> = ({
             </div>
           </Flex>
         </Col>
-        <Col span={9} style={{ paddingRight: "130px", background: "" }}>
-          <Card>
-            <Space>Tổng tiền: </Space>
+        <Col span={8} style={{ paddingRight: "160px" }}>
+          <Card
+            style={{
+              boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.1)", // Adjust the values according to your design
+              
+            }}
+          >
+            <Space style={{ color: "#333", fontSize: "16px" }}>
+              Tạm tính:{" "}
+            </Space>
             <Space style={{ float: "right", color: "red" }}>
               {formatCurrency(total)}
             </Space>

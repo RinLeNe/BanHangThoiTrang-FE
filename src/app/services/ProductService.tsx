@@ -65,3 +65,7 @@ export const updateProduct = async (
   );
   return response;
 };
+export const searchNamOrNu = async (type: any) => {
+  const response = await axiosClient.get(`localhost:8080/api/products/search?type=${type}`)
+  return response;
+}
