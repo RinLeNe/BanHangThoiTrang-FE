@@ -1,3 +1,4 @@
+import { isCancel } from "axios";
 import { user } from "./AuthInterface";
 import { Product } from "./productInterface";
 export interface OrderDetail {
@@ -15,6 +16,7 @@ export interface Order {
   id: any;
   user: Pick<user, "id">;
   orderDetails: OrderDetail[];
+  isCanceled: boolean;
 //   product: Pick<Product, "id">;
   // orderTime: string;
 //   quantity: any;

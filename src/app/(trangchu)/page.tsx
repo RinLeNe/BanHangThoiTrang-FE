@@ -70,11 +70,11 @@ const App: React.FC = () => {
       currency: "VND",
     });
   };
-  
+
   useEffect(() => {
     setLoading(true);
     Promise.all([findCategory(), findProduct()])
-      .then(() => setLoading(false)) 
+      .then(() => setLoading(false))
       .catch(() => setLoading(false));
     // findCategory();
     // findProduct();
@@ -113,7 +113,8 @@ const App: React.FC = () => {
       const cartDetail: CartDetail = {
         user: { id: userId },
         product: { id: item.id },
-        quantity: 1
+        quantity: 1,
+        size: item.sizes[0].name,
       };
       onAddProductToCart(cartDetail);
     } catch (error) {
@@ -147,10 +148,14 @@ const App: React.FC = () => {
                   hoverable
                   cover
                   style={{
-                    // width: "100px",
                     textAlign: "center",
                     minHeight: "90px",
-                  }}
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1)'
+
+                  }}  
                 >
                   <Text
                     style={{
@@ -188,7 +193,6 @@ const App: React.FC = () => {
             renderItem={(item: Product) => {
               return (
                 <List.Item>
-                  <Skeleton loading={loading} active={!productData}>
                   <Card
                     className={styles.productCard}
                     style={{ width: 300 }}
@@ -243,7 +247,6 @@ const App: React.FC = () => {
                       }
                     ></Card.Meta>
                   </Card>
-                  </Skeleton>
                 </List.Item>
               );
             }}

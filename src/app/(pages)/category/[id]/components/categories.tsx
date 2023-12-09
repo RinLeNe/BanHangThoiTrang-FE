@@ -12,9 +12,8 @@ interface AppCategoryProps {
   onSelectCategory: (categoryId: any) => void;
 }
 const AppCategory: React.FC<AppCategoryProps> = ({ onSelectCategory }) => {
-  // const router = useRouter();
-
   const [categoryData, setCategoryData] = useState<Category[] | undefined>();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const findCategory = async () => {
     try {
@@ -28,6 +27,10 @@ const AppCategory: React.FC<AppCategoryProps> = ({ onSelectCategory }) => {
   useEffect(() => {
     findCategory();
   }, []);
+  const handleCardClick = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    onSelectCategory(categoryId);
+  };
   return (
     <>
       <List
@@ -43,11 +46,24 @@ const AppCategory: React.FC<AppCategoryProps> = ({ onSelectCategory }) => {
                 hoverable
                 cover
                 style={{
-                  // width: "100px",
                   textAlign: "center",
                   minHeight: "90px",
-                }}
-                onClick={() => {onSelectCategory(item.id)}}
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  // boxShadow: "4px 4px 8px rgba(0, 0, 0, 0.1)",
+                  boxShadow:
+                    //@ts-ignore
+                    selectedCategory === item.id
+                      ? "4px 4px 8px rgba(255, 0, 0, 0.5)"
+                      : "4px 4px 8px rgba(0, 0, 0, 0.1)",
+                  border:
+                    //@ts-ignores
+                    selectedCategory === item.id
+                      ? "2px solid red"
+                      : "2px solid transparent",
+                }}//@ts-ignore
+                onClick={() => handleCardClick(item.id)}
               >
                 <Text
                   style={{

@@ -17,6 +17,7 @@
 //   id: number;
 //   path: string;
 
+import { ProductSize } from "./ProductSizeEnum";
 import { ProductType } from "./ProductTypeEnum";
 
 // }
@@ -28,6 +29,7 @@ export interface ProductDetail {
   description: string;
   quantity: number;
   productType: ProductType;
+  productSize: ProductSize;
   productCategory: Pick<DataTypeCategory, "id">;
   image_id: Array<{ path: string }>;
 }
@@ -39,6 +41,7 @@ export interface Product {
   discount: string;
   description: string;
   quantity: number;
+  quantitySold: number;
   productType: ProductType;
   category: Pick<DataTypeCategory, "id">;
   image_id: DateTypeProductImage[];

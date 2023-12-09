@@ -50,7 +50,7 @@ const AppShowItem = (props: IProps) => {
   const [pageInfo, setPageInfo] = useState({
     totalPages: 0,
     currentPage: 0,
-    pageSize: 10, // adjust based on your API response
+    pageSize: 10, 
     totalElements: 0,
   });
   const handleAddToCart = async (userId: any, item: any) => {
@@ -59,6 +59,8 @@ const AppShowItem = (props: IProps) => {
       const cartDetail: CartDetail = {
         user: { id: userId },
         product: { id: item.id },
+        quantity: 1,
+        size: item.sizes[0].name,
       };
       onAddProductToCart(cartDetail);
     } catch (error) {

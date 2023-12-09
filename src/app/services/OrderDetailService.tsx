@@ -6,3 +6,15 @@ export const findAllByOrder = async (orderId: any) => {
   );
   return response;
 };
+export const DoanhThuByCategory = async (categoryId: any) => {
+  const response = await axiosClient.get(
+    `http://localhost:8080/api/orderdetails/sumBycategory?categoryId=${categoryId}`
+  );
+  return response;
+};
+export const findAllOrderDetail = async () => {
+  const response = await axiosClient.get(
+    "http://localhost:8080/api/orderdetails/findall"
+  );
+  return response;
+};

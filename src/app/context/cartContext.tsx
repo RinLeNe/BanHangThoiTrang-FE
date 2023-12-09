@@ -45,11 +45,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       const res = await addCart(cart);
       if (res) {
         message.success("Thêm vào giỏ hàng thành công!");
-        
+
         findCartByUser();
       }
     } catch (error) {
-      message.error("Bạn không thể thêm quá số lượng cho phép!"); 
+      message.error("Bạn không thể thêm quá số lượng cho phép!");
     }
   };
   const onDelete = async (cartId: any) => {
@@ -60,9 +60,15 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   };
   const onUpdate = async (cartId: any, cartDetail: CartDetail) => {
-    const res = await updateCart(cartId, cartDetail);
-    if (res) {
-      findCartByUser();
+    console.log(cartDetail);
+    try {
+      const res = await updateCart(cartId, cartDetail);
+      if (res) {
+        message.success("Thay đổi thành công!");
+        findCartByUser();
+      }
+    } catch (error) {
+      message.error("Bạn không thể thêm quá số lượng cho phép!");
     }
   };
   useEffect(() => {
